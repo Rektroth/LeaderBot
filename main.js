@@ -88,7 +88,7 @@ Client.on("message", msg =>
 
 			if (args.length == 3)
 			{
-				SendPbMessage(channel);
+				SendPbMessage(channel, args[0], args[1], args[2]);
 			}
 			else
 			{
@@ -174,8 +174,83 @@ function SendSourceMessage(channel)
 
 function SendPbMessage(channel, player, game, category)
 {
-	// not yet implemented
-	console.log("PB message is not implemented yet.");
+	var pbTime;
+	var pbDate;
+	var pbLink;
+
+	$.getJSON("https://www.speedrun.com/api/v1/users?name=" + player, function(playerData)
+	{
+		if (playerData.data.length != 0)
+		{
+			$.getJSON(playerData.data[0].links[3].uri + "?embed=game,category", function(pbsData)
+			{
+				if (pbsData.data.length != 0)
+				{
+					for (let i = 0; i < pbsData.data.length; i++)
+					{
+						let gameName = pbsData.data[i].game.data.names["international"];
+						let categoryName = pbsData.data[i].category.data.name;
+						let categoryType = pbsData.data[i].category.data.type;
+
+						if (gameName == game && categoryName == category && categoryType == "per-game")
+						{
+							pbTime = FormatTime(pbsData.data[i].run.times.primary_t);
+							pbDate = FormatDate(pbsData.data[i].run.date);
+							pbLink = pbsData.data[i].run.weblink;
+
+							let description = player + "'s personal best in " + game + " - " + category;
+							description += " is " + pbTime;
+							description += ", set on " + pbDate + ".";
+							description += "\n" + pbLink;
+
+							channel.send(new discord.MessageEmbed()
+								.setColor(MESSAGE_COLOR)
+								.setTitle("Personal Best Run")
+								.setDescription(description)
+							);
+
+							break;
+						}
+
+						if (i == pbsData.data.length - 1)
+						{
+							let description = "Either " + player;
+							description += " currently has no personal best in the '" + category + "' category,";
+							description += " or the game/category does not exist.";
+
+							channel.send(new discord.MessageEmbed()
+								.setColor(MESSAGE_COLOR)
+								.setTitle("No Personal Best")
+								.setDescription(description)
+							);
+						}
+					}
+				}
+				else
+				{
+					let description = "Either " + player;
+					description += " currently has no personal best in the '" + category + "' category,";
+					description += " or the game/category does not exist.";
+
+					channel.send(new discord.MessageEmbed()
+						.setColor(MESSAGE_COLOR)
+						.setTitle("No Personal Best")
+						.setDescription(description)
+					);
+				}
+			});
+		}
+		else
+		{
+			channel.send(new discord.MessageEmbed()
+				.setColor(MESSAGE_COLOR)
+				.setTitle("Player Not Found")
+				.setDescription("No player with the name '" + player + "' was found.")
+			);
+		}
+	});
+
+	console.log("Sent the personal best for " + player + " in '" + game + " - " + category + "' to channel " + channel.id + ".");
 }
 
 function SendWrMessage(channel, game, category)
