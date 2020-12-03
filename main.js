@@ -1,6 +1,6 @@
 const jsdom = require("jsdom");
 const discord = require("discord.js");
-const fs = require('fs');
+const fs = require("fs");
 const { JSDOM } = jsdom;
 const { window } = new JSDOM();
 const { document } = (new JSDOM("")).window;
@@ -23,18 +23,18 @@ function Main()
 		try
 		{
 			Settings = JSON.parse(rawSettingsData);
-			Login = Settings['login'];
+			Login = Settings["login"];
 		}
 		catch (err)
 		{
-			console.log("There was a problem reading your 'settings.json' file.");
+			console.log('There was a problem reading your "settings.json" file.');
 			process.exit();
 		}
 	}
 	catch (err)
 	{
 		fs.writeFileSync("settings.json", '{ "login": YOUR_LOGIN_KEY }');
-		console.log("A 'settings.json' file has been created.");
+		console.log('A "settings.json" file has been created.');
 		process.exit();
 	}
 
@@ -107,7 +107,7 @@ function PlayerNotFoundMessage(player)
 	return new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
 		.setTitle("Player Not Found")
-		.setDescription("No player named '" + player + "' was found.");
+		.setDescription('No player named "' + player + '" was found.');
 }
 
 function GameNotFoundMessage(game)
@@ -115,7 +115,7 @@ function GameNotFoundMessage(game)
 	return new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
 		.setTitle("Game Not Found")
-		.setDescription("No game named '" + game + "' was found.");
+		.setDescription('No game named "' + game + '" was found.');
 }
 
 function CategoryNotFoundMessage(category)
@@ -123,7 +123,7 @@ function CategoryNotFoundMessage(category)
 	return new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
 		.setTitle("Leaderboard Not Found")
-		.setDescription("No category named '" + category + "' was found.");
+		.setDescription('No category named "' + category + '" was found.');
 }
 
 function SendHelpMessage(channel)
@@ -242,15 +242,11 @@ function SendPbMessage(channel, player, game, category)
 		}
 		else
 		{
-			channel.send(new discord.MessageEmbed()
-				.setColor(MESSAGE_COLOR)
-				.setTitle("Player Not Found")
-				.setDescription("No player with the name '" + player + "' was found.")
-			);
+			channel.send(PlayerNotFoundMessage(player));
 		}
 	});
 
-	console.log("Sent the personal best for " + player + " in '" + game + " - " + category + "' to channel " + channel.id + ".");
+	console.log("Sent the personal best for " + player + ' in "' + game + " - " + category + '" to channel ' + channel.id + ".");
 }
 
 function SendWrMessage(channel, game, category)
@@ -327,7 +323,7 @@ function SendWrMessage(channel, game, category)
 		}
 	});
 
-	console.log("Sent the world record for '" + game + " - " + category + "' to channel " + channel.id + ".");
+	console.log('Sent the world record for "' + game + " - " + category + '" to channel ' + channel.id + ".");
 }
 
 function FormatTime(time)
