@@ -7,153 +7,258 @@ const { document } = (new JSDOM("")).window;
 global.document = document;
 const $ = jQuery = require("jquery")(window);
 
-const client = new discord.Client();
+const Client = new discord.Client();
 
-const EMBED_COLOR = "#0F7A4D";
+const MESSAGE_COLOR = "#0F7A4D";
 
-login = "";
+var Settings;
+var Login;
 
-try {
-	let rawSettingsData = fs.readFileSync("settings.json");
+function Main()
+{
+	try
+	{
+		let rawSettingsData = fs.readFileSync("settings.json");
 
-	try {
-		let settings = JSON.parse(rawSettingsData);
-		login = settings['login'];
-	} catch (err) {
-		console.log("There was a problem reading your 'settings.json' file.");
+		try
+		{
+			Settings = JSON.parse(rawSettingsData);
+			Login = Settings['login'];
+		}
+		catch (err)
+		{
+			console.log("There was a problem reading your 'settings.json' file.");
+			process.exit();
+		}
+	}
+	catch (err)
+	{
+		fs.writeFileSync("settings.json", '{ "login": YOUR_LOGIN_KEY }');
+		console.log("A 'settings.json' file has been created.");
 		process.exit();
 	}
-} catch (err) {
-	fs.writeFileSync("settings.json", '{ "login": YOUR_LOGIN_KEY }');
-	console.log("A 'settings.json' file has been created.");
-	process.exit();
+
+	Client.login(Login);
 }
 
-const helpEmbed = new discord.MessageEmbed()
-	.setColor(EMBED_COLOR)
-	.setTitle("LeaderBot Help")
-	.addFields(
-		{ name: "Queries", value: "!wr\n!pb" }
-	);
-
-const helpWrEmbed = new discord.MessageEmbed()
-	.setColor(EMBED_COLOR)
-	.setTitle("!wr Command Help")
-	.setDescription("Usage:\n    !wr game_name;category_name\n\nRetrieves the world record run for a specified game category.");
-
-const helpPbEmbed = new discord.MessageEmbed()
-	.setColor(EMBED_COLOR)
-	.setTitle("!pb Command Help")
-	.setDescription("Usage:\n    !pb user_name;game_name;category_name\n\nRetrives a specified user's personal best run for a specified game category.");
-
-client.login(login);
-
-client.on("ready", () => {
-    console.log("Logged in as " + client.user.tag + "!");
+Client.on("ready", () =>
+{
+    console.log("Logged in as " + Client.user.tag + "!");
 });
 
-client.on("message", msg => {
+Client.on("message", msg =>
+{
     var channel = msg.channel;
 	
-	if (msg.content === "!help"){
-		channel.send(helpEmbed);
+	if (msg.content.startsWith("!help"))
+	{
+		SendHelpMessage(channel);
 	}
-	
-	if (msg.content.startsWith("!wr ")) {
-		var res = msg.content.substring(4);
-		var args = res.split(";");
-		
-		if (args.length == 2) {
-			var gameName = args[0];
-			var gameId = "000";
-			var categoryName = args[1];
-			var categoryId = "000";
-			var playerId = "000";
-			
-			$.getJSON("https://www.speedrun.com/api/v1/games?name=" + gameName, function(data1) {
-				if (data1.data.length != 0){
-					gameId = data1.data[0].id;
-					
-					$.getJSON("https://www.speedrun.com/api/v1/games/" + gameId + "/categories", function(data2) {
-						if (data2.data.length != 0){
-							for (var i = 0; i < data2.data.length; i++) {
-								if (data2.data[i].name === categoryName) {
-									categoryId = data2.data[i].id;
-									break;
-								}
-							}
-							
-							if (categoryId != "000") {
-								$.getJSON("https://www.speedrun.com/api/v1/leaderboards/" + gameId + "/category/" + categoryId, function(data3) {
-									if (data3.data.runs.length != 0) {
-										$.getJSON(data3.data.runs[0].run.players[0].uri, function(data4) {
-											var wrTime = formatTime(data3.data.runs[0].run.times.primary_t);
-											var wrHolder = data4.data.names.international;
-											var wrDate = formatDate(data3.data.runs[0].run.date);
-											var wrLink = data3.data.runs[0].run.weblink;
-											
-											channel.send(new discord.MessageEmbed()
-												.setColor(EMBED_COLOR)
-												.setTitle("World Record Run")
-												.setDescription("The current world record in " + gameName + " - " + categoryName + " is " + wrTime + " by " + wrHolder + ", set on " + wrDate + ".\n" + wrLink)
-											);
-											console.log("Sent world record for " + gameName + " - " + categoryName + " to channel " + channel.id + ".");
-										});
-									}
-									else {
+	else if (msg.content.startsWith("!wr"))
+	{
+		if (msg.content == "!wr")
+		{
+			SendHelpWrMessage(channel);
+		}
+		else if (msg.content.startsWith("!wr "))
+		{
+			let res = msg.content.substring(4);
+			let args = res.split(";");
+
+			if (args.length == 2)
+			{
+				SendWrMessage(channel, args[0], args[1]);
+			}
+			else
+			{
+				SendHelpWrMessage(channel);
+			}
+		}
+	}
+	else if (msg.content.startsWith("!pb"))
+	{
+		if (msg.content == "!pb")
+		{
+			SendHelpPbMessage(channel);
+		}
+		else if (msg.content.startsWith("!pb "))
+		{
+			let res = msg.content.substring(4);
+			let args = res.split(";");
+
+			if (args.length == 3)
+			{
+				SendPbMessage(channel);
+			}
+			else
+			{
+				SendHelpPbMessage(channel);
+			}
+		}
+	}
+	else if (msg.content == "!source")
+	{
+		SendSourceMessage(channel);
+	}
+});
+
+function PlayerNotFoundMessage(player)
+{
+	return new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("Player Not Found")
+		.setDescription("No player named '" + player + "' was found.");
+}
+
+function GameNotFoundMessage(game)
+{
+	return new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("Game Not Found")
+		.setDescription("No game named '" + game + "' was found.");
+}
+
+function CategoryNotFoundMessage(category)
+{
+	return new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("Leaderboard Not Found")
+		.setDescription("No category named '" + category + "' was found.");
+}
+
+function SendHelpMessage(channel)
+{
+	channel.send(new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("LeaderBot Help")
+		.addFields(
+			{ name: "Queries", value: "!help\n!pb\n!source\n!wr" }
+		)
+	);
+
+	console.log("Sent help message to channel " + channel.id + ".");
+}
+
+function SendHelpPbMessage(channel)
+{
+	channel.send(new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("!pb Command Help")
+		.setDescription("Usage:\n    !pb user_name;game_name;category_name\n\nRetrives a specified user's personal best run for a specified game category.")
+	);
+
+	console.log("Sent pb help message to channel " + channel.id + ".");
+}
+
+function SendHelpWrMessage(channel)
+{
+	channel.send(new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("!wr Command Help")
+		.setDescription("Usage:\n    !wr game_name;category_name\n\nRetrieves the world record run for a specified game category.")
+	);
+
+	console.log("Sent wr help message to channel " + channel.id + ".");
+}
+
+function SendSourceMessage(channel)
+{
+	channel.send(new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("Source Code")
+		.setDescription("My source code is available at:\nhttps://github.com/Rektroth/LeaderBot")
+	);
+
+	console.log("Sent source code info to channel " + channel.id + ".");
+}
+
+function SendPbMessage(channel, player, game, category)
+{
+	// not yet implemented
+	console.log("PB message is not implemented yet.");
+}
+
+function SendWrMessage(channel, game, category)
+{
+	var wrTime;
+	var wrHolder;
+	var wrDate;
+	var wrLink;
+
+	$.getJSON("https://www.speedrun.com/api/v1/games?name=" + game, function(gamesData)
+	{
+		if (gamesData.data.length != 0)
+		{
+			$.getJSON(gamesData.data[0].links[3].uri, function(categoriesData)
+			{
+				if (categoriesData.data.length != 0)
+				{
+					for (let i = 0; i < categoriesData.data.length; i++)
+					{
+						if (categoriesData.data[i].name == category)
+						{
+							$.getJSON(categoriesData.data[i].links[3].uri, function(recordsData)
+							{
+								if (recordsData.data[0].runs.length != 0)
+								{
+									$.getJSON(recordsData.data[0].runs[0].run.players[0].uri, function(playerData)
+									{
+										wrTime = FormatTime(recordsData.data[0].runs[0].run.times.primary_t);
+										wrHolder = playerData.data.names.international;
+										wrDate = FormatDate(recordsData.data[0].runs[0].run.date);
+										wrLink = recordsData.data[0].runs[0].run.weblink;
+
+										let description = "The current world record in " + game + " - " + category;
+										description += " is " + wrTime;
+										description += " by " + wrHolder;
+										description += ", set on " + wrDate + ".";
+										description += "\n" + wrLink;
+
 										channel.send(new discord.MessageEmbed()
-											.setColor(EMBED_COLOR)
-											.setTitle("Error")
-											.setDescription("That category has no runs.")
+											.setColor(MESSAGE_COLOR)
+											.setTitle("World Record Run")
+											.setDescription(description)
 										);
-									}
-								});
-							}
-							else {
-								channel.send(new discord.MessageEmbed()
-									.setColor(EMBED_COLOR)
-									.setTitle("Error")
-									.setDescription("No category with that name was found.")
-								);
-							}
+									});
+								}
+								else
+								{
+									channel.send(new discord.MessageEmbed()
+										.setColor(MESSAGE_COLOR)
+										.setTitle("No World Record")
+										.setDescription("The '" + category + "' category currently has no world record.")
+									);
+								}
+							});
+
+							break;
 						}
-						else{
-							channel.send(new discord.MessageEmbed()
-								.setColor(EMBED_COLOR)
-								.setTitle("LeaderBoard Error")
-								.setDescription("No category with that name was found.")
-							);
+
+						if (i == categoriesData.data.length - 1)
+						{
+							channel.send(CategoryNotFoundMessage(category));
 						}
-					});
+					}
 				}
-				else {
-					channel.send(new discord.MessageEmbed()
-						.setColor(EMBED_COLOR)
-						.setTitle("Leaderboard Error")
-						.setDescription("No game with that name was found.")
-					);
+				else
+				{
+					channel.send(CategoryNotFoundMessage(category));
 				}
 			});
 		}
-		else {
-			channel.send(helpWrEmbed);
+		else
+		{
+			channel.send(GameNotFoundMessage(game));
 		}
-	}
-	else if (msg.content === "!wr") {
-		channel.send(helpWrEmbed);
-	}
-	
-	if (msg.content.startsWith("!pb ")) {
-		channel.send(new discord.MessageEmbed()
-			.setColor(EMBED_COLOR)
-			.setTitle("Command Notification")
-			.setDescription("That command has not been fully implemented yet. Please check back later.")
-		);
-	}
-});
+	});
 
-function formatTime(time) {
-	if (time > 3600) {
+	console.log("Sent the world record for '" + game + " - " + category + "' to channel " + channel.id + ".");
+}
+
+function FormatTime(time)
+{
+	if (time > 3600)
+	{
 		var h = Math.floor(time / 3600);
 		var m = Math.floor(time / 60) - (h * 60);
 		var s = time % 60;
@@ -161,39 +266,48 @@ function formatTime(time) {
 		var minutes;
 		var seconds;
 		
-		if (m < 10) {
+		if (m < 10)
+		{
 			minutes = "0" + m;
 		}
-		else {
+		else
+		{
 			minutes = m;
 		}
 		
-		if (s < 10) {
+		if (s < 10)
+		{
 			seconds = "0" + s;
 		}
-		else {
+		else
+		{
 			seconds = s;
 		}
 		
 		return h + ":" + minutes + ":" + seconds;
 	}
-	else if (time > 60) {
+	else if (time > 60)
+	{
 		var m = Math.floor(time / 60);
 		var s = time % 60;
 		
-		if (s < 10) {
+		if (s < 10)
+		{
 			return m + ":0" + s;
 		}
-		else {
+		else
+		{
 			return m + ":" + s;
 		}
 	}
-	else {
+	else
+	{
 		return time + "s";
 	}
 }
 
-function formatDate(date) {
+function FormatDate(date)
+{
 	var y = date.substring(0, 4);
 	var m = date.substring(5, 7);
 	var d = date.substring(8, 10);
@@ -241,18 +355,27 @@ function formatDate(date) {
 			break;
 	}
 	
-	if (d % 10 == 1) {
+	if (d % 10 == 1)
+	{
 		day = d + "st";
 	}
-	else if (d % 10 == 2) {
+	else if (d % 10 == 2)
+	{
 		day = d + "nd";
 	}
-	else if (d % 10 == 3) {
+	else if (d % 10 == 3)
+	{
 		day = d + "rd";
 	}
-	else {
+	else
+	{
 		day = d + "th";
 	}
 	
 	return month + " " + day + ", " + y;
+}
+
+if (require.main === module)
+{
+	Main();
 }
