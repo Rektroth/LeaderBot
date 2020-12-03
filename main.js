@@ -54,34 +54,30 @@ Client.on("message", msg =>
 	{
 		SendHelpMessage(channel);
 	}
-	else if (msg.content.startsWith("!wr"))
+	else if (msg.content.startsWith("!levelwr"))
 	{
-		if (msg.content == "!wr")
+		if (msg.content.startsWith("!levelwr "))
 		{
-			SendHelpWrMessage(channel);
-		}
-		else if (msg.content.startsWith("!wr "))
-		{
-			let res = msg.content.substring(4);
+			let res = msg.content.substring(9);
 			let args = res.split(";");
 
-			if (args.length == 2)
+			if (args.length == 3)
 			{
-				SendWrMessage(channel, args[0], args[1]);
+				SendLevelWrMessage(channel, args[0], args[1], args[2]);
 			}
 			else
 			{
-				SendHelpWrMessage(channel);
+				SendHelpLevelWrMessage(channel);
 			}
+		}
+		else
+		{
+			SendHelpLevelWrMessage(channel);
 		}
 	}
 	else if (msg.content.startsWith("!pb"))
 	{
-		if (msg.content == "!pb")
-		{
-			SendHelpPbMessage(channel);
-		}
-		else if (msg.content.startsWith("!pb "))
+		if (msg.content.startsWith("!pb "))
 		{
 			let res = msg.content.substring(4);
 			let args = res.split(";");
@@ -95,35 +91,80 @@ Client.on("message", msg =>
 				SendHelpPbMessage(channel);
 			}
 		}
+		else
+		{
+			SendHelpPbMessage(channel);
+		}
 	}
 	else if (msg.content == "!source")
 	{
 		SendSourceMessage(channel);
 	}
+	else if (msg.content.startsWith("!wr"))
+	{
+		if (msg.content.startsWith("!wr "))
+		{
+			let res = msg.content.substring(4);
+			let args = res.split(";");
+
+			if (args.length == 2)
+			{
+				SendWrMessage(channel, args[0], args[1]);
+			}
+			else
+			{
+				SendHelpWrMessage(channel);
+			}
+		}
+		else
+		{
+			SendHelpWrMessage(channel);
+		}
+	}
 });
 
-function PlayerNotFoundMessage(player)
+function SendPlayerNotFoundMessage(channel, player)
 {
-	return new discord.MessageEmbed()
+	channel.send(new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
 		.setTitle("Player Not Found")
-		.setDescription('No player named "' + player + '" was found.');
+		.setDescription('No player named "' + player + '" was found.')
+	);
+
+	console.log('Player "' + player + '" was not found.');
 }
 
-function GameNotFoundMessage(game)
+function SendGameNotFoundMessage(channel, game)
 {
-	return new discord.MessageEmbed()
+	channel.send(new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
 		.setTitle("Game Not Found")
-		.setDescription('No game named "' + game + '" was found.');
+		.setDescription('No game named "' + game + '" was found.')
+	);
+
+	console.log('Game "' + game + '" was not found.');
 }
 
-function CategoryNotFoundMessage(category)
+function SendLevelNotFoundMessage(channel, level)
 {
-	return new discord.MessageEmbed()
+	channel.send(new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
-		.setTitle("Leaderboard Not Found")
-		.setDescription('No category named "' + category + '" was found.');
+		.setTitle("Level Not Found")
+		.setDescription('No level named "' + level + '" was found.')
+	);
+
+	console.log('Level "' + level + '" was not found.');
+}
+
+function SendCategoryNotFoundMessage(channel, category)
+{
+	channel.send(new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("Category Not Found")
+		.setDescription('No category named "' + category + '" was found.')
+	);
+
+	console.log('Category "' + category + '" was not found.');
 }
 
 function SendHelpMessage(channel)
@@ -132,19 +173,38 @@ function SendHelpMessage(channel)
 		.setColor(MESSAGE_COLOR)
 		.setTitle("LeaderBot Help")
 		.addFields(
-			{ name: "Queries", value: "!help\n!pb\n!source\n!wr" }
+			{ name: "Queries", value: "!help\n!levelwr\n!levelpb\n!pb\n!source\n!wr" }
 		)
 	);
 
 	console.log("Sent help message to channel " + channel.id + ".");
 }
 
+function SendHelpLevelWrMessage(channel)
+{
+	var description = "Usage:\n    ";
+	description += "!levelwr game_name;level_name;category_name\n\n";
+	description += "Retrieves the world record run for a specified game level and category.";
+
+	channel.send(new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("!levelwr Command Help")
+		.setDescription(description)
+	);
+
+	console.log("Sent levelwr help message to channel " + channel.id + ".");
+}
+
 function SendHelpPbMessage(channel)
 {
+	var description = "Usage:\n    ";
+	description += "!pb user_name;game_name;category_name\n\n";
+	description += "Retrives a specified user's personal best run for a specified game category.";
+
 	channel.send(new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
 		.setTitle("!pb Command Help")
-		.setDescription("Usage:\n    !pb user_name;game_name;category_name\n\nRetrives a specified user's personal best run for a specified game category.")
+		.setDescription(description)
 	);
 
 	console.log("Sent pb help message to channel " + channel.id + ".");
@@ -152,24 +212,117 @@ function SendHelpPbMessage(channel)
 
 function SendHelpWrMessage(channel)
 {
+	var description = "Usage:\n    ";
+	description += "!wr game_name;category_name\n\n";
+	description += "Retrieves the world record run for a specified game category.";
+
 	channel.send(new discord.MessageEmbed()
 		.setColor(MESSAGE_COLOR)
 		.setTitle("!wr Command Help")
-		.setDescription("Usage:\n    !wr game_name;category_name\n\nRetrieves the world record run for a specified game category.")
+		.setDescription(description)
 	);
 
 	console.log("Sent wr help message to channel " + channel.id + ".");
 }
 
-function SendSourceMessage(channel)
+function SendLevelWrMessage(channel, game, level, category)
 {
-	channel.send(new discord.MessageEmbed()
-		.setColor(MESSAGE_COLOR)
-		.setTitle("Source Code")
-		.setDescription("My source code is available at:\nhttps://github.com/Rektroth/LeaderBot")
-	);
+	var wrTime;
+	var wrHolder;
+	var wrDate;
+	var wrLink;
 
-	console.log("Sent source code info to channel " + channel.id + ".");
+	$.getJSON("https://www.speedrun.com/api/v1/games?name=" + game, function(gamesData)
+	{
+		if (gamesData.data[0].names["international"] == game)
+		{
+			$.getJSON(gamesData.data[0].links[2].uri, function(levelsData)
+			{
+				if (levelsData.data.length != 0)
+				{
+					for (let i = 0; i < levelsData.data.length; i++)
+					{
+						if (levelsData.data[i].name == level)
+						{
+							$.getJSON(levelsData.data[0].links[2].uri, function(categoriesData)
+							{
+								if (categoriesData.data.length != 0)
+								{
+									for (let j = 0; j < categoriesData.data.length; j++)
+									{
+										if (categoriesData.data[j].name == category)
+										{
+											$.getJSON(categoriesData.data[j].links[3].uri, function(recordsData)
+											{
+												if (recordsData.data[0].runs.length != 0)
+												{
+													$.getJSON(recordsData.data[0].runs[0].run.players[0].uri, function(playerData)
+													{
+														wrTime = FormatTime(recordsData.data[0].runs[0].run.times.primary_t);
+														wrHolder = playerData.data.names.international;
+														wrDate = FormatDate(recordsData.data[0].runs[0].run.date);
+														wrLink = recordsData.data[0].runs[0].run.weblink;
+
+														let description = "The current world record in " + game + " - " + level + ": " + category;
+														description += " is " + wrTime;
+														description += " by " + wrHolder;
+														description += ", set on " + wrDate + ".";
+														description += "\n" + wrLink;
+
+														channel.send(new discord.MessageEmbed()
+															.setColor(MESSAGE_COLOR)
+															.setTitle("World Record Run")
+															.setDescription(description)
+														);
+													});
+												}
+												else
+												{
+													channel.send(new discord.MessageEmbed()
+														.setColor(MESSAGE_COLOR)
+														.setTitle("No World Record")
+														.setDescription("The '" + category + "' category currently has no world record.")
+													);
+												}
+											});
+
+											break;
+										}
+
+										if (j == categoriesData.data.length - 1)
+										{
+											SendCategoryNotFoundMessage(channel, category);
+										}
+									}
+								}
+								else
+								{
+									SendCategoryNotFoundMessage(channel, category);
+								}
+							});
+
+							break;
+						}
+
+						if (i == levelsData.data.length - 1)
+						{
+							SendLevelNotFoundMessage(channel, level);
+						}
+					}
+				}
+				else
+				{
+					SendLevelNotFoundMessage(channel, level);
+				}
+			});
+		}
+		else
+		{
+			SendGameNotFoundMessage(channel, game);
+		}
+	});
+
+	console.log('Sent the world record for "' + game + " - " + level + ": " + category + '" to channel ' + channel.id + ".");
 }
 
 function SendPbMessage(channel, player, game, category)
@@ -242,11 +395,22 @@ function SendPbMessage(channel, player, game, category)
 		}
 		else
 		{
-			channel.send(PlayerNotFoundMessage(player));
+			SendPlayerNotFoundMessage(player);
 		}
 	});
 
 	console.log("Sent the personal best for " + player + ' in "' + game + " - " + category + '" to channel ' + channel.id + ".");
+}
+
+function SendSourceMessage(channel)
+{
+	channel.send(new discord.MessageEmbed()
+		.setColor(MESSAGE_COLOR)
+		.setTitle("Source Code")
+		.setDescription("My source code is available at:\nhttps://github.com/Rektroth/LeaderBot")
+	);
+
+	console.log("Sent source code info to channel " + channel.id + ".");
 }
 
 function SendWrMessage(channel, game, category)
@@ -258,7 +422,7 @@ function SendWrMessage(channel, game, category)
 
 	$.getJSON("https://www.speedrun.com/api/v1/games?name=" + game, function(gamesData)
 	{
-		if (gamesData.data.length != 0)
+		if (gamesData.data[0].names["international"] == game)
 		{
 			$.getJSON(gamesData.data[0].links[3].uri, function(categoriesData)
 			{
