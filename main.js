@@ -232,33 +232,31 @@ function SendLevelWrMessage(channel, game, level, category)
 	var wrDate;
 	var wrLink;
 
-	$.getJSON("https://www.speedrun.com/api/v1/games?name=" + game, function(gamesData)
+	$.getJSON("https://www.speedrun.com/api/v1/games?name=" + game + "&embed=levels", function(gamesData)
 	{
-		if (gamesData.data[0].names["international"] == game)
+		if (gamesData.data.length != 0 && gamesData.data[0].names["international"] == game)
 		{
-			$.getJSON(gamesData.data[0].links[2].uri, function(levelsData)
+			if (gamesData.data[0].levels.data.length != 0)
 			{
-				if (levelsData.data.length != 0)
+				for (let i = 0; i < gamesData.data[0].levels.data.length; i++)
 				{
-					for (let i = 0; i < levelsData.data.length; i++)
+					if (gamesData.data[0].levels.data[i].name == level)
 					{
-						if (levelsData.data[i].name == level)
+						$.getJSON(gamesData.data[0].levels.data[i].links[2].uri, function(categoriesData)
 						{
-							$.getJSON(levelsData.data[0].links[2].uri, function(categoriesData)
+							if (categoriesData.data.length != 0)
 							{
-								if (categoriesData.data.length != 0)
+								for (let j = 0; j < categoriesData.data.length; j++)
 								{
-									for (let j = 0; j < categoriesData.data.length; j++)
+									if (categoriesData.data[j].name == category)
 									{
-										if (categoriesData.data[j].name == category)
+										$.getJSON(categoriesData.data[j].links[3].uri + "?embed=players", function(recordsData)
 										{
-											$.getJSON(categoriesData.data[j].links[3].uri, function(recordsData)
+											if (recordsData.data[0].runs.length != 0)
 											{
-												if (recordsData.data[0].runs.length != 0)
+												$.getJSON(recordsData.data[0].runs[0].run.players[0].uri, function(playerData)
 												{
-													$.getJSON(recordsData.data[0].runs[0].run.players[0].uri, function(playerData)
-													{
-														wrTime = FormatTime(recordsData.data[0].runs[0].run.times.primary_t);
+													wrTime = FormatTime(recordsData.data[0].runs[0].run.times.primary_t);
 														wrHolder = playerData.data.names.international;
 														wrDate = FormatDate(recordsData.data[0].runs[0].run.date);
 														wrLink = recordsData.data[0].runs[0].run.weblink;
