@@ -19,7 +19,7 @@ module.exports = {
             var respGamesData = await fetch(`https://www.speedrun.com/api/v1/games?name=${game}`);
             var gamesData = await respGamesData.json();
 
-            if (gamesData.data[0].names["international"] == game) {
+            if (gamesData.data.length != 0 && gamesData.data[0].names["international"] == game) {
                 var respCatData = await fetch(gamesData.data[0].links[3].uri);
                 var catData = await respCatData.json();
                 
