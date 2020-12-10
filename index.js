@@ -1,10 +1,12 @@
 const discord = require("discord.js");
 const fs = require("fs");
+const path = require("path");
 
 const client = new discord.Client();
+client.commands = new discord.Collection();
 
 const commandPath = path.join(__dirname, "/commands");
-const commandFiles = Fs.readdirSync(commandPath).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(commandPath).filter(file => file.endsWith('.js'));
 
 for (var file of commandFiles)
 {
@@ -39,14 +41,14 @@ client.on("ready", () => {
 
 client.on("message", msg => {
     if (msg.content.startsWith("!help")) {
-		commands.get("help").execute(msg);
+		client.commands.get("help").execute(msg);
 	} else if (msg.content.startsWith("!source")) {
-		commands.get("source").execute(msg);
+		client.commands.get("source").execute(msg);
 	} else if (msg.content.startsWith("!wr")) {
 		let res = msg.content.substring(4);
 		let args = res.split(";");
 
-		commands.get("wr").execute(msg, args);
+		client.commands.get("wr").execute(msg, args);
 	}
 });
 

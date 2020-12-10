@@ -4,11 +4,11 @@ module.exports = {
     execute: async function(msg, args) {
         const discord = require("discord.js");
         const formatting = require("../formatting.js");
+        var channelId = msg.channel.id;
 
         if (args.length >= 2) {
             var game = args[0];
             var category = args[1];
-            var channelId = msg.channel.id;
 
             var wrTime;
             var wrHolder;

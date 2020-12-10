@@ -1,9 +1,10 @@
 module.exports = {
     name: "help",
     description: "Gets the world record of a given category in a given game.",
-    execute: async function(msg, args) {
+    execute: function(msg) {
         const discord = require("discord.js");
         const formatting = require("../formatting.js");
+        var channelId = msg.channel.id;
 
         msg.reply(new discord.MessageEmbed()
                 .setColor(formatting.messageColor)
@@ -15,5 +16,6 @@ module.exports = {
                               + "    !pb\n"
                               + "    !source\n"
                               + "    !wr\n"));
+        console.log(`Sent help message to channel ${channelId}.`);
     }
 }

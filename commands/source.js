@@ -1,11 +1,13 @@
 module.exports = {
     name: "source",
     description: "Provides a link to the source code.",
-    execute: async function(msg) {
+    execute: function(msg) {
         const discord = require("discord.js");
+        const formatting = require("../formatting.js");
+        var channelId = msg.channel.id;
 
         msg.reply(new discord.MessageEmbed()
-		    .setColor(MESSAGE_COLOR)
+		    .setColor(formatting.messageColor)
 		    .setTitle("Source Code")
             .setDescription("My source code is available at:\n"
                           + "https://github.com/Rektroth/LeaderBot"));
