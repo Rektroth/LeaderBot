@@ -14,15 +14,12 @@ for (var file of commandFiles)
 	client.commands.set(command.name, command);
 }
 
-var settings;
-var login;
-
 try {
 	let rawSettingsData = fs.readFileSync("settings.json");
 
 	try {
-		settings = JSON.parse(rawSettingsData);
-		login = settings["login"];
+		var settings = JSON.parse(rawSettingsData);
+		var login = settings["login"];
 	} catch (err) {
 		console.log('There was a problem reading your "settings.json" file.');
 		process.exit();

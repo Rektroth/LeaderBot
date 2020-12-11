@@ -8,20 +8,15 @@ module.exports = {
         const channelId = msg.channel.id;
 
         if (args.length >= 3) {
-            const player = args[0];
-            const game = args[1];
-            const category = args[2];
-
-            var pbTime;
-            var pbDate;
-            var pbLink;
-        
-            var respPlayerData = await fetch(`https://www.speedrun.com/api/v1/users?name=${player}`);
-            var playerData = await respPlayerData.json();
+            let player = args[0];
+            let game = args[1];
+            let category = args[2];
+            let respPlayerData = await fetch(`https://www.speedrun.com/api/v1/users?name=${player}`);
+            let playerData = await respPlayerData.json();
 
             if (playerData.data.length != 0 && playerData.data[0].name == player) {
-                var respPbsData = await fetch(playerData.data[0].links[3].uri + "?embed=game,category");
-                var pbsData = await respPbsData.json();
+                let respPbsData = await fetch(playerData.data[0].links[3].uri + "?embed=game,category");
+                let pbsData = await respPbsData.json();
                 
                 if (pbsData.data.length != 0) {
                     for (let i = 0; i < pbsData.data.length; i++) {
@@ -30,14 +25,15 @@ module.exports = {
                         let categoryType = pbsData.data[i].category.data.type;
         
                         if (gameName == game && categoryName == category && categoryType == "per-game") {
-                            pbTime = FormatTime(pbsData.data[i].run.times.primary_t);
-                            pbDate = FormatDate(pbsData.data[i].run.date);
-                            pbLink = pbsData.data[i].run.weblink;
+                            let pbTime = FormatTime(pbsData.data[i].run.times.primary_t);
+                            let pbDate = FormatDate(pbsData.data[i].run.date);
+                            let pbLink = pbsData.data[i].run.weblink;
+
                             msg.reply(new discord.MessageEmbed()
                                 .setColor(formatting.messageColor)
                                 .setTitle("Personal Best Run")
                                 .setDescription(`${player}'s personal best in ${game} - ${category} `
-                                              + `is ${pbTime}, set on ${pbData}.\n`
+                                              + `is ${pbTime}, set on ${pbDate}.\n`
                                               + pbLink));
                             break;
                         }

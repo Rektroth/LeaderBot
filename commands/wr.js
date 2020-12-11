@@ -8,35 +8,28 @@ module.exports = {
         const channelId = msg.channel.id;
 
         if (args.length >= 2) {
-            const game = args[0];
-            const category = args[1];
-
-            var wrTime;
-            var wrHolder;
-            var wrDate;
-            var wrLink;
-
-            var respGamesData = await fetch(`https://www.speedrun.com/api/v1/games?name=${game}`);
-            var gamesData = await respGamesData.json();
+            let game = args[0];
+            let category = args[1];
+            let respGamesData = await fetch(`https://www.speedrun.com/api/v1/games?name=${game}`);
+            let gamesData = await respGamesData.json();
 
             if (gamesData.data.length != 0 && gamesData.data[0].names["international"] == game) {
-                var respCatData = await fetch(gamesData.data[0].links[3].uri);
-                var catData = await respCatData.json();
+                let respCatData = await fetch(gamesData.data[0].links[3].uri);
+                let catData = await respCatData.json();
                 
                 if (catData.data.length != 0) {
                     for (let i = 0; i < catData.data.length; i++) {
                         if (catData.data[i].name == category) {
-                            var respRecData = await fetch(catData.data[i].links[3].uri);
-                            var recData = await respRecData.json();
+                            let respRecData = await fetch(catData.data[i].links[3].uri);
+                            let recData = await respRecData.json();
 
                             if (recData.data[0].runs.length != 0) {
-                                var respPlayerData = await fetch(recData.data[0].runs[0].run.players[0].uri);
-                                var playerData = await respPlayerData.json();
-
-                                wrTime = formatting.formatTime(recData.data[0].runs[0].run.times.primary_t);
-                                wrHolder = playerData.data.names.international;
-                                wrDate = formatting.formatDate(recData.data[0].runs[0].run.date);
-                                wrLink = recData.data[0].runs[0].run.weblink;
+                                let respPlayerData = await fetch(recData.data[0].runs[0].run.players[0].uri);
+                                let playerData = await respPlayerData.json();
+                                let wrTime = formatting.formatTime(recData.data[0].runs[0].run.times.primary_t);
+                                let wrHolder = playerData.data.names.international;
+                                let wrDate = formatting.formatDate(recData.data[0].runs[0].run.date);
+                                let wrLink = recData.data[0].runs[0].run.weblink;
 
                                 msg.reply(new discord.MessageEmbed()
                                     .setColor(formatting.messageColor)
@@ -58,23 +51,23 @@ module.exports = {
                             msg.reply(new discord.MessageEmbed()
                                 .setColor(formatting.messageColor)
                                 .setTitle("Category Not Found")
-                                .setDescription(`No category named "${category}" was found.`));
-                            console.log(`Category "${category}" was not found.`);
+                                .setDescription(`The category "${category}" was not found.`));
+                            console.log(`The category "${category}" was not found.`);
                         }
                     }
                 } else {
                     msg.reply(new discord.MessageEmbed()
                         .setColor(formatting.messageColor)
                         .setTitle("Category Not Found")
-                        .setDescription(`No category named "${category}" was found.`));
-                    console.log(`Category "${category}" was not found.`);
+                        .setDescription(`The category "${category}" was not found.`));
+                    console.log(`The category "${category}" was not found.`);
                 }
             } else {
                 msg.reply(new discord.MessageEmbed()
                     .setColor(formatting.messageColor)
                     .setTitle("Game Not Found")
-                    .setDescription(`No game named "${game}" was found.`));
-                console.log(`No game named "${game}" was found.`);
+                    .setDescription(`The game "${game}" was not found.`));
+                console.log(`The game "${game}" was not found.`);
             }
 
             console.log(`Sent the world record for "${game} - ${category}" to channel ${channelId}.`);
