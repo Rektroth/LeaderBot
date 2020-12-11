@@ -5,11 +5,11 @@ module.exports = {
         const discord = require("discord.js");
         const fetch = require("node-fetch");
         const formatting = require("../formatting.js");
-        var channelId = msg.channel.id;
+        const channelId = msg.channel.id;
 
         if (args.length >= 2) {
-            var game = args[0];
-            var category = args[1];
+            const game = args[0];
+            const category = args[1];
 
             var wrTime;
             var wrHolder;
@@ -84,7 +84,7 @@ module.exports = {
                 .setTitle("!wr Command Help")
                 .setDescription("Usage:\n"
                               + "    !wr game_name;category_name\n\n"
-                              + "Retrieves the world record run for a specified game category."));
+                              + "Gets the world record of a given category in a given game."));
             console.log(`Sent wr help message to channel ${channelId}.`);
         }
     }
