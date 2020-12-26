@@ -3,16 +3,11 @@ const fs = require("fs");
 const path = require("path");
 
 const client = new discord.Client();
-client.commands = new discord.Collection();
 
-const commandPath = path.join(__dirname, "/commands");
-const commandFiles = fs.readdirSync(commandPath).filter(file => file.endsWith('.js'));
-
-for (var file of commandFiles)
-{
-	var command = require(`./commands/${file}`);
-	client.commands.set(command.name, command);
-}
+const help = require("./commands/help");
+const pb = require("./commands/pb");
+const source = require("./commands/source");
+const wr = require("./commands/wr");
 
 try {
 	let rawSettingsData = fs.readFileSync("settings.json");
@@ -22,12 +17,12 @@ try {
 		var login = settings["login"];
 	} catch (err) {
 		console.log('There was a problem reading your "settings.json" file.');
-		process.exit();
+		process.exit(-1);
 	}
 } catch (err) {
 	fs.writeFileSync("settings.json", '{ "login": YOUR_LOGIN_KEY }');
 	console.log('A "settings.json" file has been created.');
-	process.exit();
+	process.exit(-1);
 }
 
 client.login(login);
@@ -38,113 +33,14 @@ client.on("ready", () => {
 
 client.on("message", msg => {
     if (msg.content.startsWith("!help")) {
-		client.commands.get("help").execute(msg);
+		help(msg);
+	} else if (msg.content.startsWith("!pb")) {
+		let args = msg.content.substring(4).split(";");
+		pb(msg, args);
 	} else if (msg.content.startsWith("!source")) {
-		client.commands.get("source").execute(msg);
+		source(msg);
 	} else if (msg.content.startsWith("!wr")) {
-		let res = msg.content.substring(4);
-		let args = res.split(";");
-
-		client.commands.get("wr").execute(msg, args);
+		let args = msg.content.substring(4).split(";");
+		wr(msg, args);
 	}
 });
-
-/*
-function SendLevelWrMessage(channel, game, level, category)
-{
-	var wrTime;
-	var wrHolder;
-	var wrDate;
-	var wrLink;
-
-	$.getJSON("https://www.speedrun.com/api/v1/games?name=" + game + "&embed=levels", function(gamesData)
-	{
-		if (gamesData.data.length != 0 && gamesData.data[0].names["international"] == game)
-		{
-			if (gamesData.data[0].levels.data.length != 0)
-			{
-				for (let i = 0; i < gamesData.data[0].levels.data.length; i++)
-				{
-					if (gamesData.data[0].levels.data[i].name == level)
-					{
-						$.getJSON(gamesData.data[0].levels.data[i].links[2].uri, function(categoriesData)
-						{
-							if (categoriesData.data.length != 0)
-							{
-								for (let j = 0; j < categoriesData.data.length; j++)
-								{
-									if (categoriesData.data[j].name == category)
-									{
-										$.getJSON(categoriesData.data[j].links[3].uri + "?embed=players", function(recordsData)
-										{
-											if (recordsData.data[0].runs.length != 0)
-											{
-												$.getJSON(recordsData.data[0].runs[0].run.players[0].uri, function(playerData)
-												{
-													wrTime = FormatTime(recordsData.data[0].runs[0].run.times.primary_t);
-														wrHolder = playerData.data.names.international;
-														wrDate = FormatDate(recordsData.data[0].runs[0].run.date);
-														wrLink = recordsData.data[0].runs[0].run.weblink;
-
-														let description = "The current world record in " + game + " - " + level + ": " + category;
-														description += " is " + wrTime;
-														description += " by " + wrHolder;
-														description += ", set on " + wrDate + ".";
-														description += "\n" + wrLink;
-
-														channel.send(new discord.MessageEmbed()
-															.setColor(MESSAGE_COLOR)
-															.setTitle("World Record Run")
-															.setDescription(description)
-														);
-													});
-												}
-												else
-												{
-													channel.send(new discord.MessageEmbed()
-														.setColor(MESSAGE_COLOR)
-														.setTitle("No World Record")
-														.setDescription("The '" + category + "' category currently has no world record.")
-													);
-												}
-											});
-
-											break;
-										}
-
-										if (j == categoriesData.data.length - 1)
-										{
-											SendCategoryNotFoundMessage(channel, category);
-										}
-									}
-								}
-								else
-								{
-									SendCategoryNotFoundMessage(channel, category);
-								}
-							});
-
-							break;
-						}
-
-						if (i == levelsData.data.length - 1)
-						{
-							SendLevelNotFoundMessage(channel, level);
-						}
-					}
-				}
-				else
-				{
-					SendLevelNotFoundMessage(channel, level);
-				}
-			});
-		}
-		else
-		{
-			SendGameNotFoundMessage(channel, game);
-		}
-	});
-
-	console.log('Sent the world record for "' + game + " - " + level + ": " + category + '" to channel ' + channel.id + ".");
-}
-*/
