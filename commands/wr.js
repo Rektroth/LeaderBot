@@ -1,4 +1,4 @@
-const discord = require("discord");
+const discord = require("discord.js");
 const fetch = require("node-fetch");
 const formatting = require("../formatting");
 
@@ -14,7 +14,7 @@ module.exports = async function(msg, args) {
         }
 
         let gamesData = await fetch(`https://www.speedrun.com/api/v1/games?name=${game}&embed=categories,levels`);
-        gamesData = await respGamesData.json();
+        gamesData = await gamesData.json();
 
         if (gamesData.data.length != 0 && gamesData.data[0].names["international"] == game) {
             let catData = gamesData.data[0].categories;
@@ -49,11 +49,11 @@ module.exports = async function(msg, args) {
                 for (let i = 0; i < catData.data.length; i++) {
                     if (catData.data[i].name == category) {
                         let recData = await fetch(catData.data[i].links[3].uri);
-                        recData = await respRecData.json();
+                        recData = await recData.json();
 
                         if (recData.data[0].runs.length != 0) {
-                            let respPlayerData = await fetch(recData.data[0].runs[0].run.players[0].uri);
-                            let playerData = await respPlayerData.json();
+                            let playerData = await fetch(recData.data[0].runs[0].run.players[0].uri);
+                            playerData = await playerData.json();
                             let wrTime = formatting.formatTime(recData.data[0].runs[0].run.times.primary_t);
                             let wrHolder = playerData.data.names.international;
                             let wrDate = formatting.formatDate(recData.data[0].runs[0].run.date);

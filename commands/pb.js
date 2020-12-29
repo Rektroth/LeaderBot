@@ -1,4 +1,4 @@
-const discord = require("discord");
+const discord = require("discord.js");
 const fetch = require("node-fetch");
 const formatting = require("../formatting");
 

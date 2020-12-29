@@ -1,4 +1,4 @@
-const discord = require("discord");
+const discord = require("discord.js");
 const formatting = require("../formatting");
 
 module.exports = function(msg) {
