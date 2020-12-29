@@ -1,5 +1,5 @@
-const discord = require("discord.js");
-const formatting = require("../formatting.js");
+const discord = require("discord");
+const formatting = require("../formatting");
 
 module.exports = async function(msg) {
     var channelId = msg.channel.id;

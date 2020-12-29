@@ -1,6 +1,6 @@
-const discord = require("discord.js");
+const discord = require("discord");
 const fetch = require("node-fetch");
-const formatting = require("../formatting.js");
+const formatting = require("../formatting");
 
 module.exports = async function(msg, args) {
     if (args.length >= 2 && args.length <= 3) {
