@@ -35,8 +35,12 @@ exports.formatTime = function(time) {
 };
 
 exports.formatDate = function(date) {
-	const m = Number(date.substring(5, 7));
-	const d = date.substring(8, 10);
+	var m = Number(date.substring(5, 7));
+	var d = date.substring(8, 10);
+
+	if (d < 10) {
+		d = d.substring(1, 2);
+	}
     
     const months = [
         "January",
