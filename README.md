@@ -29,14 +29,12 @@ Upon the first launch, a `settings.json` file will be created for you to provide
 Gets a list of categories for a given game or level:
 
 * `!categories game`
-* `!categories game;level`
 
 ### !help
 
 Simple help command:
 
 * `!help`
-* `!help command`
 
 ### !levels
 
@@ -50,8 +48,8 @@ Gets a given player's personal best in a given game, category, or subcategory:
 
 * `!pb player;game;category`
 * `!pb player;game;level;category`
-* `!pb player;game;category[subcategory1|subcategory2|...]`
-* `!pb player;game;level;category[subcategory1|subcategory2|...]`
+* ~~`!pb player;game;category[subcategory1|subcategory2|...]`~~
+* ~~`!pb player;game;level;category[subcategory1|subcategory2|...]`~~
 
 ### !rules
 
@@ -80,5 +78,5 @@ Gets the world record of a given category or subcategory:
 
 * `!wr game;category`
 * `!wr game;level;category`
-* `!wr game;category[subcategory1|subcategory2|...]`
-* `!wr game;level;category[subcategory1|subcategory2|...]`
+* ~~`!wr game;category[subcategory1|subcategory2|...]`~~
+* ~~`!wr game;level;category[subcategory1|subcategory2|...]`~~
