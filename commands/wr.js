@@ -104,12 +104,12 @@ module.exports = async function(msg, args) {
                                 msg.reply(new discord.MessageEmbed()
                                     .setColor(formatting.messageColor)
                                     .setTitle("No World Record")
-                                    .setDescription(`The "${category}" category currently has no world record.`));
+                                    .setDescription(`There is currently on world record in ${game} - ${category}.`));
                             } else {
                                 msg.reply(new discord.MessageEmbed()
                                     .setColor(formatting.messageColor)
                                     .setTitle("No World Record")
-                                    .setDescription(`The "${level}: ${category}" category currently has no world record.`));
+                                    .setDescription(`There is currently on world record in ${game} - ${level}: ${category}.`));
                             }
                         }
 
