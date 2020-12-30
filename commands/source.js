@@ -9,5 +9,4 @@ module.exports = function(msg) {
 		.setTitle("Source Code")
         .setDescription("My source code is available at:\n"
                       + "https://github.com/Rektroth/LeaderBot"));
-    console.log(`Sent source code info to channel ${channelId}.`);
 };
