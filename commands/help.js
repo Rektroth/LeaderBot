@@ -7,14 +7,16 @@ module.exports = async function(msg) {
     msg.reply(new discord.MessageEmbed()
             .setColor(formatting.messageColor)
             .setTitle("LeaderBot Help")
-            .setDescription("Commands:\n"
-                          + "    !categories\n"
-                          + "    !help\n"
-                          + "    !levels\n"
-                          + "    !pb\n"
-                          + "    !rules\n"
-                          + "    !source\n"
-                          + "    !subcategories\n"
-                          + "    !wr"));
+            .setDescription("Information:\n"
+                          + "`!categories`\n"
+                          + "`!levels`\n"
+                          + "`!rules`\n"
+                          + "`!subcategories`\n\n"
+                          + "Runs:\n"
+                          + "`!pb`\n"
+                          + "`!wr`\n\n"
+                          + "Miscellaneous:\n"
+                          + "`!help`\n"
+                          + "`!source`"));
     console.log(`Sent help message to channel ${channelId}.`);
 };

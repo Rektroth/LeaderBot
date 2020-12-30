@@ -137,9 +137,9 @@ module.exports = async function(msg, args) {
         msg.reply(new discord.MessageEmbed()
             .setColor(formatting.messageColor)
             .setTitle("!wr Command Help")
-            .setDescription("``!wr game;category``\n"
-                          + "Gets the world record of ``category`` in ``game``.\n\n"
-                          + "``!wr game;level;category``\n"
-                          + "Gets the world record of ``category`` in ``level`` of ``game``."));
+            .setDescription("`!wr game;category`\n"
+                          + "Gets the world record of `category` in `game`.\n\n"
+                          + "`!wr game;level;category`\n"
+                          + "Gets the world record of `category` in `level` of `game`."));
     }
 };

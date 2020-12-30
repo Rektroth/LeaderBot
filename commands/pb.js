@@ -3,78 +3,99 @@ const fetch = require("node-fetch");
 const formatting = require("../formatting");
 
 module.exports = async function(msg, args) {
-    var channelId = msg.channel.id;
-    
-    if (args.length >= 3) {
+    if (args.length >= 3 && args.length <= 4) {
         var player = args[0];
         var game = args[1];
-        var category = args[2];
-        var respPlayerData = await fetch(`https://www.speedrun.com/api/v1/users?name=${player}`);
-        var playerData = await respPlayerData.json();
 
-        if (playerData.data.length != 0 && playerData.data[0].name == player) {
-            var respPbsData = await fetch(playerData.data[0].links[3].uri + "?embed=game,category");
-            var pbsData = await respPbsData.json();
-                
-            if (pbsData.data.length != 0) {
-                for (let i = 0; i < pbsData.data.length; i++) {
-                    var gameName = pbsData.data[i].game.data.names["international"];
-                    var categoryName = pbsData.data[i].category.data.name;
-                    var categoryType = pbsData.data[i].category.data.type;
-        
-                    if (gameName == game && categoryName == category && categoryType == "per-game") {
-                        var pbTime = FormatTime(pbsData.data[i].run.times.primary_t);
-                        var pbDate = FormatDate(pbsData.data[i].run.date);
-                        var pbLink = pbsData.data[i].run.weblink;
+        if (args.length == 3) {
+            var category = args[2];
+        } else {
+            var level = args[2];
+            var category = args[3];
+        }
 
-                        msg.reply(new discord.MessageEmbed()
-                            .setColor(formatting.messageColor)
-                            .setTitle("Personal Best Run")
-                            .setDescription(`${player}'s personal best in ${game} - ${category} `
-                                          + `is ${pbTime}, set on ${pbDate}.\n`
-                                          + pbLink));
-                        break;
+        let players = await fetch(`https://www.speedrun.com/api/v1/users?name=${player}`);
+        players = await players.json();
+        players = players.data;
+
+        if (players.length != 0 && players[0].names["international"] == player) {
+            let personalBests = await fetch(`${players[0].links[3].uri}?embed=game,category,level`);
+            personalBests = await personalBests.json();
+            personalBests = personalBests.data;
+
+            if (personalBests.length != 0) {
+                for (let i = 0; i < personalBests.length; i++) {
+                    let run = personalBests[i].run;
+                    let gameName = personalBests[i].game.data.names["international"];
+                    let categoryName = personalBests[i].category.data.name;
+
+                    if (args.length == 3) {
+                        let categoryType = personalBests[i].category.data.type;
+                        
+                        if (gameName == game && categoryName == category && categoryType == "per-game") {
+                            let pbTime = formatting.formatTime(run.times["primary_t"]);
+                            let pbDate = formatting.formatDate(run.date);
+                            let pbLink = run.weblink;
+                            
+                            msg.reply(new discord.MessageEmbed()
+                                .setColor(formatting.messageColor)
+                                .setTitle("Personal Best Run")
+                                .setDescription(`${player}'s current personal best in ${game} - ${category} `
+                                              + `is ${pbTime}, set on ${pbDate}.\n`
+                                              + pbLink));
+                            return;
+                        }
+                    } else if (personalBests[i].level.data.hasOwnProperty("name")) {
+                        let levelName = personalBests[i].level.data.name;
+
+                        if (gameName == game && categoryName == category && levelName == level) {
+                            let pbTime = formatting.formatTime(run.times["primary_t"]);
+                            let pbDate = formatting.formatDate(run.date);
+                            let pbLink = run.weblink;
+                            
+                            msg.reply(new discord.MessageEmbed()
+                                .setColor(formatting.messageColor)
+                                .setTitle("Personal Best Run")
+                                .setDescription(`${player}'s current personal best in ${game} - ${level}: ${category} `
+                                              + `is ${pbTime}, set on ${pbDate}.\n`
+                                              + pbLink));
+                            return;
+                        }
                     }
-        
-                    if (i == pbsData.data.length - 1){
+                    
+                    if (i == personalBests.length - 1) {
                         msg.reply(new discord.MessageEmbed()
                             .setColor(formatting.messageColor)
                             .setTitle("No Personal Best")
-                            .setDescription(`Either ${player} current has no personal best `
-                                          + `in the "${category}" category or the `
-                                          + `game/category does not exist.`));
-                        console.log(`Either ${player} current has no personal best `
-                                  + `in the "${category}" category or the `
-                                  + `game/category does not exist.`);
+                            .setDescription(`${player} currently has no personal best in ${game} - ${category}.`));
                     }
                 }
             } else {
-                msg.reply(new discord.MessageEmbed()
-                    .setColor(formatting.messageColor)
-                    .setTitle("No Personal Best")
-                    .setDescription(`Either ${player} current has no personal best `
-                                  + `in the "${category}" category or the `
-                                  + `game/category does not exist.`));
-                console.log(`Either ${player} current has no personal best `
-                          + `in the "${category}" category or the `
-                          + `game/category does not exist.`);
+                if (args.length == 3) {
+                    msg.reply(new discord.MessageEmbed()
+                        .setColor(formatting.messageColor)
+                        .setTitle("No Personal Best")
+                        .setDescription(`${player}" currently has no personal best in ${game} - ${category}.`));
+                } else {
+                    msg.reply(new discord.MessageEmbed()
+                        .setColor(formatting.messageColor)
+                        .setTitle("No Personal Best")
+                        .setDescription(`${player}" currently has no personal best in ${game} - ${level}: ${category}.`));
+                }
             }
         } else {
             msg.reply(new discord.MessageEmbed()
                 .setColor(formatting.messageColor)
                 .setTitle("Player Not Found")
                 .setDescription(`The player "${player}" was not found.`));
-            console.log(`The player "${player}" was not found.`);
         }
-
-        console.log(`Sent ${player}'s personal best for "${game} - ${category}" to channel ${channelId}.`);
     } else {
         msg.reply(new discord.MessageEmbed()
             .setColor(formatting.messageColor)
             .setTitle("!pb Command Help")
-            .setDescription("Usage:\n"
-                          + "    !pb player_name;game_name;category_name\n\n"
-                          + "Gets a given player's personal best in a given category in a given game."));
-        console.log(`Sent pb help message to channel ${channelId}.`);
+            .setDescription("`!pb player;game;category`\n"
+                          + "Gets `player`'s personal best in `category` in `game`.\n\n"
+                          + "`!pb player;game;level;category`\n"
+                          + "Gets `player`'s personal best in `category` in `level` of `game`."));
     }
 };
