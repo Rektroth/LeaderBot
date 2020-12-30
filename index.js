@@ -11,6 +11,7 @@ const levels = require("./commands/levels");
 const pb = require("./commands/pb");
 const rules = require("./commands/rules");
 const source = require("./commands/source");
+const subcategories = require("./commands/subcategories");
 const wr = require("./commands/wr");
 
 try {
@@ -104,6 +105,19 @@ client.on("message", msg => {
 							  + "Provides a link to my source code."));
 		} else if (msg.content == "!source") {
 			source(msg);
+		}
+	} else if (msg.content.startsWith("!subcategories")) {
+		if (msg.content == "!subcategories") {
+			msg.reply(new discord.MessageEmbed()
+				.setColor(formatting.messageColor)
+				.setTitle("!subcategories Command Help")
+				.setDescription("`!subcategories game;category`\n"
+							  + "Gets the subcategories of `category` in `game`.\n\n"
+							  + "`!subcategories game;level;category`\n"
+							  + "Gets the subcategories of `category` in `level` of `game`."));
+		} else if (msg.content.startsWith("!subcategories ")) {
+			let args = msg.content.substring(15).split(";");
+			subcategories(msg, args);
 		}
 	} else if (msg.content.startsWith("!wr")) {
 		if (msg.content == "!wr") {
