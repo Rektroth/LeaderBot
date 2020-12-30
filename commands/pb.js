@@ -64,10 +64,17 @@ module.exports = async function(msg, args) {
                     }
                     
                     if (i == personalBests.length - 1) {
-                        msg.reply(new discord.MessageEmbed()
-                            .setColor(formatting.messageColor)
-                            .setTitle("No Personal Best")
-                            .setDescription(`${player} currently has no personal best in ${game} - ${category}.`));
+                        if (args.length == 3) {
+                            msg.reply(new discord.MessageEmbed()
+                                .setColor(formatting.messageColor)
+                                .setTitle("No Personal Best")
+                                .setDescription(`${player} currently has no personal best in ${game} - ${category}.`));
+                        } else {
+                            msg.reply(new discord.MessageEmbed()
+                                .setColor(formatting.messageColor)
+                                .setTitle("No Personal Best")
+                                .setDescription(`${player} currently has no personal best in ${game} - ${level}: ${category}.`));
+                        }
                     }
                 }
             } else {
