@@ -55,7 +55,7 @@ module.exports = async function(msg, args) {
         msg.reply(new discord.MessageEmbed()
             .setColor(formatting.messageColor)
             .setTitle("!categories Command Help")
-            .setDescription("`!categories game\n"
+            .setDescription("`!categories game`\n"
                           + "Gets the categories in `game`."));
     }
 };

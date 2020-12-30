@@ -43,7 +43,7 @@ module.exports = async function(msg, args) {
         msg.reply(new discord.MessageEmbed()
             .setColor(formatting.messageColor)
             .setTitle("!levels Command Help")
-            .setDescription("`!levels game\n"
+            .setDescription("`!levels game`\n"
                           + "Gets the levels of `game`."));
     }
 };

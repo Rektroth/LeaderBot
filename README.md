@@ -55,7 +55,6 @@ Gets a given player's personal best in a given game, category, or subcategory:
 
 Gets the rules of a given game, level, or category:
 
-* `!rules game`
 * `!rules game;category`
 * `!rules game;level;category`
 

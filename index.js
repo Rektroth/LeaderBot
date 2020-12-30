@@ -9,6 +9,7 @@ const categories = require("./commands/categories");
 const help = require("./commands/help");
 const levels = require("./commands/levels");
 const pb = require("./commands/pb");
+const rules = require("./commands/rules");
 const source = require("./commands/source");
 const wr = require("./commands/wr");
 
@@ -40,7 +41,7 @@ client.on("message", msg => {
 			msg.reply(new discord.MessageEmbed()
 				.setColor(formatting.messageColor)
 				.setTitle("!categories Command Help")
-				.setDescription("`!categories game\n"
+				.setDescription("`!categories game`\n"
 							  + "Gets the categories in `game`."));
 		} else if (msg.content.startsWith("!categories ")) {
 			let args = msg.content.substring(12).split(";");
@@ -52,7 +53,7 @@ client.on("message", msg => {
 			msg.reply(new discord.MessageEmbed()
 				.setColor(formatting.messageColor)
 				.setTitle("!help Command Help")
-				.setDescription("`!help\n"
+				.setDescription("`!help`\n"
 							  + "Displays the help message."));
 		} else if (msg.content == "!help") {
 			help(msg);
@@ -62,7 +63,7 @@ client.on("message", msg => {
 			msg.reply(new discord.MessageEmbed()
 				.setColor(formatting.messageColor)
 				.setTitle("!levels Command Help")
-				.setDescription("`!levels game\n"
+				.setDescription("`!levels game`\n"
 							  + "Gets the levels of `game`."));
 		} else if (msg.content.startsWith("!levels ")) {
 			let args = msg.content.substring(8).split(";");
@@ -80,6 +81,19 @@ client.on("message", msg => {
 		} else if (msg.content.startsWith("!pb ")) {
 			let args = msg.content.substring(4).split(";");
 			pb(msg, args);
+		}
+	} else if (msg.content.startsWith("!rules")) {
+		if (msg.content == "!rules") {
+			msg.reply(new discord.MessageEmbed()
+				.setColor(formatting.messageColor)
+				.setTitle("!rules Command Help")
+				.setDescription("`!rules game;category`\n"
+							  + "Gets the rules for `category` in `game`.\n\n"
+							  + "`!rules game;level;category`\n"
+							  + "Gets the rules for `category` in `level` of `game`."));
+		} else if (msg.content.startsWith("!rules ")) {
+			let args = msg.content.substring(7).split(";");
+			rules(msg, args);
 		}
 	} else if (msg.content.startsWith("!source")) {
 		if (msg.content.startsWith("!source ")) {
