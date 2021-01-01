@@ -65,20 +65,20 @@ module.exports = async function(msg, args) {
                     if (i == categories.length - 1) {
                         msg.reply(new discord.MessageEmbed()
                             .setColor(formatting.messageColor)
-                            .setTitle("Category Not Found")
+                            .setTitle(`"${category}" Not Found`)
                             .setDescription(`The category "${category}" was not found.`));
                     }
                 }
             } else {
                 msg.reply(new discord.MessageEmbed()
                     .setColor(formatting.messageColor)
-                    .setTitle("Category Not Found")
+                    .setTitle(`"${category}" Not Found`)
                     .setDescription(`The category "${category}" was not found.`));
             }
         } else {
             msg.reply(new discord.MessageEmbed()
                 .setColor(formatting.messageColor)
-                .setTitle("Game Not Found")
+                .setTitle(`"${game}" Not Found`)
                 .setDescription(`The game "${game}" was not found.`));
         }
     } else {

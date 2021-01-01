@@ -18,5 +18,4 @@ module.exports = async function(msg) {
                           + "Miscellaneous:\n"
                           + "`!help`\n"
                           + "`!source`"));
-    console.log(`Sent help message to channel ${channelId}.`);
 };

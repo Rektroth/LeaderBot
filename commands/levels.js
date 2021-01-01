@@ -25,18 +25,18 @@ module.exports = async function(msg, args) {
 
                 msg.reply(new discord.MessageEmbed()
                     .setColor(formatting.messageColor)
-                    .setTitle("Game Levels")
+                    .setTitle(`${game} Levels`)
                     .setDescription(levelNames));
             } else {
                 msg.reply(new discord.MessageEmbed()
                     .setColor(formatting.messageColor)
-                    .setTitle("No Levels")
+                    .setTitle(`${game} Levels`)
                     .setDescription(`${game} currently has no levels.`));
             }
         } else {
             msg.reply(new discord.MessageEmbed()
                 .setColor(formatting.messageColor)
-                .setTitle("Game Not Found")
+                .setTitle(`"${game}" Not Found`)
                 .setDescription(`The game "${game}" was not found.`));
         }
     } else {

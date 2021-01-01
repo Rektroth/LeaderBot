@@ -87,14 +87,14 @@ module.exports = async function(msg, args) {
                             if (args.length == 2) {
                                 msg.reply(new discord.MessageEmbed()
                                     .setColor(formatting.messageColor)
-                                    .setTitle("World Record Run")
+                                    .setTitle(`${game} - ${category} World Record`)
                                     .setDescription(`The current world record in ${game} - ${category} `
                                                 + `is ${wrTime} by ${wrHolder}, set on ${wrDate}\n`
                                                 + wrLink));
                             } else {
                                 msg.reply(new discord.MessageEmbed()
                                     .setColor(formatting.messageColor)
-                                    .setTitle("World Record Run")
+                                    .setTitle(`${game} - ${level}: ${category} World Record`)
                                     .setDescription(`The current world record in ${game} - ${level}: ${category} `
                                                 + `is ${wrTime} by ${wrHolder}, set on ${wrDate}\n`
                                                 + wrLink));
@@ -103,12 +103,12 @@ module.exports = async function(msg, args) {
                             if (args.length == 2) {
                                 msg.reply(new discord.MessageEmbed()
                                     .setColor(formatting.messageColor)
-                                    .setTitle("No World Record")
+                                    .setTitle(`${game} - ${category} World Record`)
                                     .setDescription(`There is currently on world record in ${game} - ${category}.`));
                             } else {
                                 msg.reply(new discord.MessageEmbed()
                                     .setColor(formatting.messageColor)
-                                    .setTitle("No World Record")
+                                    .setTitle(`${game} - ${level}: ${category} World Record`)
                                     .setDescription(`There is currently on world record in ${game} - ${level}: ${category}.`));
                             }
                         }
@@ -117,20 +117,20 @@ module.exports = async function(msg, args) {
                     } else if (i == categories.length - 1) {
                         msg.reply(new discord.MessageEmbed()
                             .setColor(formatting.messageColor)
-                            .setTitle("Category Not Found")
+                            .setTitle(`"${category}" Not Found`)
                             .setDescription(`The category "${category}" was not found.`));
                     }
                 }
             } else {
                 msg.reply(new discord.MessageEmbed()
                     .setColor(formatting.messageColor)
-                    .setTitle("Category Not Found")
+                    .setTitle(`"${category}" Not Found`)
                     .setDescription(`The category "${category}" was not found.`));
             }
         } else {
             msg.reply(new discord.MessageEmbed()
                 .setColor(formatting.messageColor)
-                .setTitle("Game Not Found")
+                .setTitle(`"${game}" Not Found`)
                 .setDescription(`The game "${game}" was not found.`));
         }
     } else {

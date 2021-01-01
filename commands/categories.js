@@ -34,7 +34,7 @@ module.exports = async function(msg, args) {
 
                 msg.reply(new discord.MessageEmbed()
                     .setColor(formatting.messageColor)
-                    .setTitle("Game Categories")
+                    .setTitle(`${game} Categories`)
                     .setDescription("**Per-Game Categories:**\n"
                                   + `${gameCategories}\n\n`
                                   + "**Per-Level Categories:**\n"
@@ -42,13 +42,13 @@ module.exports = async function(msg, args) {
             } else {
                 msg.reply(new discord.MessageEmbed()
                     .setColor(formatting.messageColor)
-                    .setTitle("No Categories")
+                    .setTitle(`${game} Categories`)
                     .setDescription(`${game} currently has no categories.`));
             }
         } else {
             msg.reply(new discord.MessageEmbed()
                 .setColor(formatting.messageColor)
-                .setTitle("Game Not Found")
+                .setTitle(`"${game}" Not Found`)
                 .setDescription(`The game "${game}" was not found.`));
         }
     } else {

@@ -39,7 +39,7 @@ module.exports = async function(msg, args) {
                             
                             msg.reply(new discord.MessageEmbed()
                                 .setColor(formatting.messageColor)
-                                .setTitle("Personal Best Run")
+                                .setTitle(`${player}'s Personal Best in ${game} - ${category}`)
                                 .setDescription(`${player}'s current personal best in ${game} - ${category} `
                                               + `is ${pbTime}, set on ${pbDate}.\n`
                                               + pbLink));
@@ -55,7 +55,7 @@ module.exports = async function(msg, args) {
                             
                             msg.reply(new discord.MessageEmbed()
                                 .setColor(formatting.messageColor)
-                                .setTitle("Personal Best Run")
+                                .setTitle(`${player}'s Personal Best in ${game} - ${level}: ${category}`)
                                 .setDescription(`${player}'s current personal best in ${game} - ${level}: ${category} `
                                               + `is ${pbTime}, set on ${pbDate}.\n`
                                               + pbLink));
@@ -67,12 +67,12 @@ module.exports = async function(msg, args) {
                         if (args.length == 3) {
                             msg.reply(new discord.MessageEmbed()
                                 .setColor(formatting.messageColor)
-                                .setTitle("No Personal Best")
+                                .setTitle(`${player}'s Personal Best in ${game} - ${category}`)
                                 .setDescription(`${player} currently has no personal best in ${game} - ${category}.`));
                         } else {
                             msg.reply(new discord.MessageEmbed()
                                 .setColor(formatting.messageColor)
-                                .setTitle("No Personal Best")
+                                .setTitle(`${player}'s Personal Best in ${game} - ${level}: ${category}`)
                                 .setDescription(`${player} currently has no personal best in ${game} - ${level}: ${category}.`));
                         }
                     }
@@ -81,19 +81,19 @@ module.exports = async function(msg, args) {
                 if (args.length == 3) {
                     msg.reply(new discord.MessageEmbed()
                         .setColor(formatting.messageColor)
-                        .setTitle("No Personal Best")
+                        .setTitle(`${player}'s Personal Best in ${game} - ${category}`)
                         .setDescription(`${player}" currently has no personal best in ${game} - ${category}.`));
                 } else {
                     msg.reply(new discord.MessageEmbed()
                         .setColor(formatting.messageColor)
-                        .setTitle("No Personal Best")
+                        .setTitle(`${player}'s Personal Best in ${game} - ${level}: ${category}`)
                         .setDescription(`${player}" currently has no personal best in ${game} - ${level}: ${category}.`));
                 }
             }
         } else {
             msg.reply(new discord.MessageEmbed()
                 .setColor(formatting.messageColor)
-                .setTitle("Player Not Found")
+                .setTitle(`"${player}" Not Found`)
                 .setDescription(`The player "${player}" was not found.`));
         }
     } else {
