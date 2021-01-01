@@ -12,7 +12,7 @@ module.exports = async function(msg, args) {
             var category = args[2];
         }
 
-        let games = await fetch(`https://www.speedrun.com/api/v1/games?name=${game}&embed=categories`);
+        let games = await fetch(`https://www.speedrun.com/api/v1/games?name=${game}`);
         games = await games.json();
         games = games.data;
 
@@ -29,12 +29,20 @@ module.exports = async function(msg, args) {
 
                         if (variables.length != 0) {
                             for (let j = 0; j < variables.length; j++) {
-                                if (variables[j].issubcategory) {
+                                if (variables[j]["is-subcategory"]) {
                                     if (subcategories != "") {
-                                        subcategories += "\n";
+                                        subcategories += "\n\n";
                                     }
                                     
-                                    subcategories += variables[j].name
+                                    subcategories += `**${variables[j].name}**`;
+
+                                    let values = variables[j].values.values;
+                                    let keys = Object.keys(values);
+
+                                    for (let k = 0; k < keys.length; k++) {
+                                        let key = keys[k];
+                                        subcategories += `\n${values[key].label}`
+                                    }
                                 }
                             }
                         }
@@ -50,6 +58,8 @@ module.exports = async function(msg, args) {
                                 .setTitle(`${game} - ${category} Subcategories`)
                                 .setDescription(`${game} - ${category} has no subcategories.`));
                         }
+
+                        return;
                     }
 
                     if (i == categories.length - 1) {
