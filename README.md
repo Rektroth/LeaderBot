@@ -7,7 +7,7 @@ A Discord bot that uses the Speedrun.com RESTful API to give you world records, 
 The following must be ran to ensure all required packages are installed before launch:
 
 ```
-npm install discord.js fs node-fetch path
+npm install discord.js fs node-fetch
 ```
 
 ## Launch

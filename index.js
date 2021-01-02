@@ -1,7 +1,6 @@
 const discord = require("discord.js");
 const formatting = require("./formatting");
 const fs = require("fs");
-const path = require("path");
 
 const client = new discord.Client();
 
