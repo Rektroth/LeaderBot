@@ -62,10 +62,9 @@ module.exports = async function(msg, args) {
                                 } else if (j == records.length - 1) {
                                     msg.reply(new discord.MessageEmbed()
                                         .setColor(formatting.messageColor)
-                                        .setTitle("Records Not Found")
+                                        .setTitle("Error 1001")
                                         .setDescription("The level and category were both found, but records for the combination were not.\n"
-                                                        + "This shouldn't happen.\n"
-                                                        + "Please report this at https://github.com/Rektroth/LeaderBot/issues with the specific game, level, and category."));
+                                                      + "This should not happen."));
                                     return;
                                 }
                             }
